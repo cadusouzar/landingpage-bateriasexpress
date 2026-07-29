@@ -23,45 +23,51 @@ export function ScrollVideo({ triggerRef, className }: ScrollVideoProps) {
   const imagesRef = useRef<HTMLImageElement[]>([]);
   const playhead = useRef({ frame: 1 });
 
-  // Preload all frames into RAM
+  // Preload frames in batches to avoid network congestion (especially in Opera)
   useEffect(() => {
-    let loadedCount = 0;
-    const imgs: HTMLImageElement[] = [];
+    const batchSize = 10;
+    imagesRef.current = new Array(frameCount);
 
-    for (let i = 1; i <= frameCount; i++) {
-      const img = new Image();
-      const frameNumber = i.toString().padStart(4, "0");
-      img.src = `/frames/frame_${frameNumber}.jpg`;
-      img.onload = () => {
-        loadedCount++;
-        // Allow starting the animation even if a few are missing, but ideally wait for all
-        if (loadedCount >= frameCount * 0.8) {
-          setImagesLoaded(true);
-        }
-      };
-      imgs.push(img);
-    }
+    const loadBatch = (start: number) => {
+      if (start > frameCount) return;
+      
+      let loadedInBatch = 0;
+      const end = Math.min(start + batchSize - 1, frameCount);
+      const totalToLoad = end - start + 1;
+      
+      for (let i = start; i <= end; i++) {
+        const img = new Image();
+        const frameNumber = i.toString().padStart(4, "0");
+        img.src = `/frames/frame_${frameNumber}.jpg`;
+        
+        img.onload = () => {
+          imagesRef.current[i - 1] = img;
+          loadedInBatch++;
+          
+          // Allow showing the first frame immediately!
+          if (i === 1) {
+            setImagesLoaded(true);
+          }
+          
+          // When current batch finishes, start the next one
+          if (loadedInBatch === totalToLoad) {
+             loadBatch(end + 1);
+          }
+        };
+
+        // Fallback in case a frame fails to load, so it doesn't halt the whole batch
+        img.onerror = () => {
+          loadedInBatch++;
+          if (loadedInBatch === totalToLoad) {
+             loadBatch(end + 1);
+          }
+        };
+      }
+    };
     
-    imagesRef.current = imgs;
+    // Start loading the first batch
+    loadBatch(1);
   }, []);
-
-  // Initial draw
-  useEffect(() => {
-    if (!imagesLoaded) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    
-    const firstValidImg = imagesRef.current.find(img => img && img.complete && img.naturalWidth > 0);
-    if (!firstValidImg) return;
-    
-    canvas.width = firstValidImg.naturalWidth || 1280;
-    canvas.height = firstValidImg.naturalHeight || 720;
-    
-    ctx.drawImage(firstValidImg, 0, 0, canvas.width, canvas.height);
-    ScrollTrigger.refresh();
-  }, [imagesLoaded]);
 
   // GSAP ScrollTrigger for Canvas drawing
   useGSAP(() => {
@@ -75,13 +81,30 @@ export function ScrollVideo({ triggerRef, className }: ScrollVideoProps) {
         frameCount - 1, 
         Math.max(0, Math.round(playhead.current.frame) - 1)
       );
-      const img = imagesRef.current[frameIndex];
-      // Only draw if image is actually loaded
-      if (img && img.complete && img.naturalWidth > 0) {
+      
+      // Find the closest loaded frame looking backwards
+      let imgToDraw = null;
+      for (let i = frameIndex; i >= 0; i--) {
+        const img = imagesRef.current[i];
+        if (img && img.complete && img.naturalWidth > 0) {
+           imgToDraw = img;
+           break;
+        }
+      }
+
+      if (imgToDraw) {
+        // Only set canvas dimensions once based on the first drawn image
+        if (canvas.width !== imgToDraw.naturalWidth && imgToDraw.naturalWidth > 0) {
+          canvas.width = imgToDraw.naturalWidth;
+          canvas.height = imgToDraw.naturalHeight;
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(imgToDraw, 0, 0, canvas.width, canvas.height);
       }
     };
+
+    // Force an initial render as soon as useGSAP runs
+    render();
 
     const scrollAnim = gsap.to(playhead.current, {
       frame: frameCount,
@@ -89,9 +112,9 @@ export function ScrollVideo({ triggerRef, className }: ScrollVideoProps) {
       ease: "none",
       scrollTrigger: {
         trigger: triggerRef.current,
-        start: "top 112px", // Account for the 112px header height so animation starts on pixel 1
-        end: "bottom bottom", // Finish animation exactly at the end of the container
-        scrub: 0.1, // Smooth fast scrubbing
+        start: "top 112px",
+        end: "bottom bottom",
+        scrub: 0.1,
       },
       onUpdate: render,
     });

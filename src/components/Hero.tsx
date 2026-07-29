@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
@@ -14,6 +14,14 @@ if (typeof window !== "undefined") {
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Force page to always load at the very top
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.history.scrollRestoration = "manual";
+      window.scrollTo(0, 0);
+    }
+  }, []);
 
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -37,41 +45,41 @@ export function Hero() {
       {/* top-28 offsets the 112px header, h-[calc(100dvh-112px)] prevents overflow */}
       <div className="sticky top-28 h-[calc(100dvh-112px)] w-full overflow-hidden flex items-center">
 
-        {/* Background Animation Layer - Stacked bottom on mobile, right on desktop */}
-        <div className="absolute right-[-25%] sm:right-0 top-auto bottom-[2%] sm:bottom-auto sm:top-[45%] lg:top-[40%] z-0 translate-y-0 sm:-translate-y-1/2 w-[150%] sm:w-full lg:w-[70%] lg:max-w-[1000px] aspect-video flex items-center justify-end pointer-events-none">
+        {/* Background Animation Layer - Stacked bottom on mobile/tablet, right on laptop/desktop */}
+        <div className="absolute right-[-15%] w-[130%] max-[425px]:right-[-10%] max-[425px]:w-[120%] max-[375px]:right-0 max-[375px]:w-[100%] max-[320px]:right-[5%] max-[320px]:w-[90%] sm:-right-[10%] sm:w-[110%] md:-right-[10%] md:w-[75%] lg:-right-[10%] lg:w-[75%] xl:right-0 xl:w-[65%] top-auto bottom-[2%] sm:bottom-[5%] md:bottom-0 lg:bottom-auto lg:top-[50%] z-0 translate-y-0 lg:-translate-y-1/2 lg:max-w-[1000px] aspect-video flex items-center justify-center lg:justify-end pointer-events-none">
           <ScrollVideo
             triggerRef={containerRef}
             className="h-full w-full object-contain mix-blend-darken opacity-90 lg:opacity-100"
           />
         </div>
 
-        {/* Foreground Content Layer - Snapped top on mobile, centered on desktop */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pointer-events-none self-start sm:self-auto mt-6 sm:mt-0 lg:-mt-32">
-          <div className="max-w-xl lg:max-w-3xl pointer-events-auto py-4 sm:py-12 lg:py-0">
+        {/* Foreground Content Layer - Snapped top on mobile/tablet, centered on desktop */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 pointer-events-none self-start lg:self-auto mt-4 sm:mt-6 md:mt-12 lg:-mt-32">
+          <div className="max-w-xl md:max-w-lg lg:max-w-xl xl:max-w-3xl pointer-events-auto py-4 sm:py-8 lg:py-0">
 
             {/* Eyebrow */}
-            <div className="mb-4 text-xs font-bold tracking-[0.25em] text-zinc-500 uppercase">
+            <div className="mb-2 sm:mb-4 text-xs font-bold tracking-[0.25em] text-zinc-500 uppercase">
               Atendimento Express
             </div>
 
             {/* Headline */}
-            <h1 className="mb-6 text-5xl font-black tracking-tighter text-zinc-900 sm:text-6xl lg:text-[6.5rem] leading-[0.95]">
+            <h1 className="mb-4 sm:mb-6 text-4xl max-[320px]:text-3xl min-[425px]:text-5xl font-black tracking-tighter text-zinc-900 sm:text-5xl md:text-6xl lg:text-7xl xl:text-[6.5rem] leading-[0.95]">
               Bateria arriou?
               <br /> Nós resolvemos.
             </h1>
 
             {/* Subtext */}
-            <p className="mb-10 max-w-[42ch] text-lg leading-relaxed text-zinc-600 font-medium">
+            <p className="mb-6 sm:mb-10 max-w-[42ch] text-base max-[320px]:text-sm min-[425px]:text-lg leading-relaxed text-zinc-600 font-medium">
               Atendimento ágil e inteligente. Instalação profissional de baterias automotivas onde você estiver. Construído para salvar o seu dia.
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
               <a
                 href="https://wa.me/5513996945956?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Baterias%20Express%20e%20gostaria%20de%20saber%20o%20pre%C3%A7o%20de%20uma%20bateria%20para%20meu%20carro."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#00355E] px-10 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-1 shadow-[0_8px_30px_rgba(0,53,94,0.3)]"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#00355E] px-10 py-3 sm:py-4 text-sm font-bold text-white transition-transform hover:-translate-y-1 shadow-[0_8px_30px_rgba(0,53,94,0.3)]"
               >
                 Solicitação imediata
               </a>
@@ -79,7 +87,7 @@ export function Hero() {
               <a
                 href="#baterias"
                 onClick={handleScroll}
-                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#F56504] px-10 py-4 text-sm font-bold text-white transition-transform hover:-translate-y-1 shadow-[0_8px_30px_rgba(245,101,4,0.3)]"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full bg-[#F56504] px-10 py-3 sm:py-4 text-sm font-bold text-white transition-transform hover:-translate-y-1 shadow-[0_8px_30px_rgba(245,101,4,0.3)]"
               >
                 Ver Modelos Disponíveis
               </a>
