@@ -48,19 +48,25 @@ export function BatteryTypes() {
   useGSAP(() => {
     if (!containerRef.current) return;
 
-    // Premium entrance stagger animation
-    gsap.from(cardsRef.current, {
-      scrollTrigger: {
-        trigger: containerRef.current,
-        start: "top 75%", // Starts before section hits the middle
+    // Premium entrance stagger animation - using fromTo to fix Safari rendering bug
+    gsap.fromTo(cardsRef.current, 
+      { 
+        y: 60, 
+        opacity: 0 
       },
-      y: 60,
-      opacity: 0,
-      duration: 1.2,
-      stagger: 0.15,
-      ease: "power3.out",
-      clearProps: "all"
-    });
+      {
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top 75%", // Starts before section hits the middle
+        },
+        y: 0,
+        opacity: 1,
+        duration: 1.2,
+        stagger: 0.15,
+        ease: "power3.out",
+        clearProps: "all"
+      }
+    );
 
   }, { scope: containerRef });
 
