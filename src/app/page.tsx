@@ -18,9 +18,7 @@ export default function Home() {
           <FastDelivery /> 
         </Reveal>
         
-        <Reveal>
-          <BatteryTypes />
-        </Reveal>
+        <BatteryTypes />
         
         <Reveal>
           <Reviews />
