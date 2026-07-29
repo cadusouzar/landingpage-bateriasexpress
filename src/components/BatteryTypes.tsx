@@ -54,10 +54,10 @@ export function BatteryTypes() {
           {batteries.map((battery) => (
             <div
               key={battery.title}
-              className={`group relative flex flex-col rounded-[2rem] ${battery.cardBg} shadow-xl shadow-[#002D5C]/5 overflow-hidden transition-shadow duration-500 hover:shadow-[0_20px_40px_rgba(245,101,4,0.15)] border border-white/10`}
+              className={`group relative flex flex-col rounded-[2rem] isolate transform-gpu ${battery.cardBg} shadow-xl shadow-[#002D5C]/5 overflow-hidden transition-shadow duration-500 hover:shadow-[0_20px_40px_rgba(245,101,4,0.15)] border border-white/10`}
             >
               {/* Image Container with Hover Scale */}
-              <div className="relative w-full aspect-[4/3] bg-gradient-to-b from-white/10 to-transparent flex items-center justify-center p-8 overflow-hidden">
+              <div className="relative flex-shrink-0 w-full aspect-[4/3] bg-gradient-to-b from-white/10 to-transparent flex items-center justify-center p-8 overflow-hidden">
                 <Image
                   src={battery.image}
                   alt={battery.title}
