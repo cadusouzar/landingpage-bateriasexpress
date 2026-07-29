@@ -1,11 +1,8 @@
 "use client";
 
-import { useRef } from "react";
 import { Check } from "lucide-react";
 import Image from "next/image";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { motion } from "motion/react";
 
 const batteries = [
   {
@@ -37,41 +34,9 @@ const batteries = [
   }
 ];
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 export function BatteryTypes() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
-
-  useGSAP(() => {
-    if (!containerRef.current) return;
-
-    // Premium entrance stagger animation - using fromTo to fix Safari rendering bug
-    gsap.fromTo(cardsRef.current, 
-      { 
-        y: 60, 
-        opacity: 0 
-      },
-      {
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 75%", // Starts before section hits the middle
-        },
-        y: 0,
-        opacity: 1,
-        duration: 1.2,
-        stagger: 0.15,
-        ease: "power3.out",
-        clearProps: "all"
-      }
-    );
-
-  }, { scope: containerRef });
-
   return (
-    <section id="baterias" className="w-full bg-zinc-50 py-24 sm:py-32" ref={containerRef}>
+    <section id="baterias" className="w-full bg-zinc-50 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}
@@ -87,10 +52,15 @@ export function BatteryTypes() {
         {/* 3-Column Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
           {batteries.map((battery, idx) => (
-            <div
+            <motion.div
               key={battery.title}
-              ref={(el) => {
-                cardsRef.current[idx] = el;
+              initial={{ opacity: 0, y: 60 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: 0.8,
+                delay: idx * 0.15,
+                ease: [0.16, 1, 0.3, 1],
               }}
               className={`group relative flex flex-col rounded-[2rem] ${battery.cardBg} shadow-xl shadow-[#002D5C]/5 overflow-hidden transition-shadow duration-500 hover:shadow-[0_20px_40px_rgba(245,101,4,0.15)] border border-white/10`}
             >
@@ -148,7 +118,7 @@ export function BatteryTypes() {
                   Solicitar Agora
                 </a>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
