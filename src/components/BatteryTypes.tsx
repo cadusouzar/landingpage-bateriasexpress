@@ -51,17 +51,9 @@ export function BatteryTypes() {
 
         {/* 3-Column Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 xl:gap-12">
-          {batteries.map((battery, idx) => (
-            <motion.div
+          {batteries.map((battery) => (
+            <div
               key={battery.title}
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: 0.8,
-                delay: idx * 0.15,
-                ease: [0.16, 1, 0.3, 1],
-              }}
               className={`group relative flex flex-col rounded-[2rem] ${battery.cardBg} shadow-xl shadow-[#002D5C]/5 overflow-hidden transition-shadow duration-500 hover:shadow-[0_20px_40px_rgba(245,101,4,0.15)] border border-white/10`}
             >
               {/* Image Container with Hover Scale */}
@@ -118,7 +110,7 @@ export function BatteryTypes() {
                   Solicitar Agora
                 </a>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
